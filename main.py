@@ -6,6 +6,8 @@ import subprocess
 import threading
 import time
 
+DEAUTH_INTERVAL = 0.005
+HOP_INTERVAL = 0.5
 
 class Hacker:
     def __init__(self):
@@ -73,14 +75,14 @@ class Hacker:
             check=True
         )
         time.sleep(0.05)
-        sendp(packet, iface=self.iface, count=ct, inter=0.005, verbose=1)
+        sendp(packet, iface=self.iface, count=ct, inter=DEAUTH_INTERVAL, verbose=1)
 
-    def channel_hopping(self, channels, interval=0.5):
+    def channel_hopping(self, channels, ):
         while self.scanning:
             for ch in channels:
                 if not self.scanning: return
                 subprocess.run(["sudo", "iwconfig", self.iface, "channel", str(ch)])
-                time.sleep(interval)
+                time.sleep(HOP_INTERVAL)
 
 
 
@@ -256,6 +258,10 @@ class MainWindow(Tk,Hacker):
             msgbox.showerror("","인터페이스를 입력해주세요")
             return
         self.set_monitor_mode()
+
+        if not self.is_monitor_mode():
+            msgbox.showerror("","모니터모드 변경 실패")
+            return
 
 
 
