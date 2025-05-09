@@ -55,6 +55,11 @@ class Hacker:
         except subprocess.CalledProcessError:
             return False
         
+    def set_monitor_mode(self):
+        subprocess.run(
+            ["sudo", "airmon-ng", "start", self.iface]
+        )
+        
     def deauth(self, ap, ch, ct):
         target = "ff:ff:ff:ff:ff:ff"
         dot11=Dot11(addr1=target, addr2=ap, addr3=ap)
@@ -82,8 +87,8 @@ class MainWindow(Tk,Hacker):
         super().__init__()
         Hacker.__init__(self)
 
-        self.geometry('450x600')
-        #self.resizable(False, False)
+        self.geometry('420x550')
+        self.resizable(False, False)
         self.title("deauthentication tool")
 
         self.bind("<Key>", self.handle_key)
@@ -99,10 +104,14 @@ class MainWindow(Tk,Hacker):
         
         r=0
 
-        Label(self, text="interface").grid(row=r, column=0, padx=25,pady=10)
+        Label(self, text="interface").grid(row=r, column=0,pady=10)
 
         self.entry_iface=Entry(self)
         self.entry_iface.grid(row=r, column=1)
+
+        r+=1
+
+        Button(self, text="Set Monitor Mode", command=self.monitor_btn).grid(row=r,column=0,columnspan=2)
 
         r+=1
 
@@ -110,13 +119,6 @@ class MainWindow(Tk,Hacker):
         self.check_target = Checkbutton(self, text="Anchor Taget")
 
         r+=1"""
-
-        Label(self, text="deauth count").grid(row=r, column=0)
-
-        self.entry_count=Entry(self)
-        self.entry_count.grid(row=r, column=1)
-
-        r+=1
         
         self.btn_scan = Button(self, text="AP SCAN",command=self.AP_scan_btn)
         self.btn_scan.grid(row=r,column=0,columnspan=2)
@@ -156,6 +158,13 @@ class MainWindow(Tk,Hacker):
 
         r+=1
 
+        Label(self, text="deauth count").grid(row=r, column=0)
+
+        self.entry_count=Entry(self)
+        self.entry_count.grid(row=r, column=1)
+
+        r+=1
+
         Button(self, text="공격",command=self.deauth_start).grid(row=r,column=0,columnspan=2)
 
 
@@ -185,10 +194,10 @@ class MainWindow(Tk,Hacker):
 
     def AP_scan_btn(self):
         if not self.iface:
-            msgbox.showerror("경고","인터페이스를 입력해주세요")
+            msgbox.showerror("","인터페이스를 입력해주세요")
             return
         if not self.is_monitor_mode():
-            msgbox.showerror("경고","인터페이스가 모니터 모드가 아닙니다.")
+            msgbox.showerror("","인터페이스가 모니터 모드가 아닙니다.")
             return
         thread = threading.Thread(target=self.ap_scan)
         thread.start()
@@ -236,6 +245,12 @@ class MainWindow(Tk,Hacker):
         thread=threading.Thread(target=self.deauth, args=(ap,ch,ct))
         thread.start()
         msgbox.showinfo("",f"{ssid}에게 공격 시작")
+
+    def monitor_btn(self):
+        if not self.iface:
+            msgbox.showerror("","인터페이스를 입력해주세요")
+            return
+        self.set_monitor_mode()
 
 
 
