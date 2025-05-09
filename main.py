@@ -43,6 +43,7 @@ class Hacker:
                         channel = vht_channel
                 elt = elt.payload.getlayer(Dot11Elt)
 
+            if channel is None: return
 
             if (ssid, bssid, channel) not in self.ap_list:
                 self.ap_list.append((ssid, bssid, channel))
@@ -52,7 +53,8 @@ class Hacker:
         try:
             result = subprocess.check_output(["iwconfig", self.iface]).decode()
             return "Mode:Monitor" in result
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
+            print(e)
             return False
         
     def set_monitor_mode(self):
@@ -70,7 +72,7 @@ class Hacker:
             ["sudo", "iwconfig", self.iface, "channel", str(ch)],
             check=True
         )
-
+        time.sleep(0.05)
         sendp(packet, iface=self.iface, count=ct, inter=0.005, verbose=1)
 
     def channel_hopping(self, channels, interval=0.5):
@@ -225,7 +227,7 @@ class MainWindow(Tk,Hacker):
 
     def stop_scan(self):
         self.scanning=False
-        self.btn_scan.destroy()
+        self.btn_scan.config(text="AP SCAN", command=self.AP_scan_btn, background="LightGrey")
 
     def deauth_start(self):
         if not self.entry_count.get().isnumeric():
