@@ -216,7 +216,7 @@ class MainWindow(Tk,Hacker):
         # 전체 결합
         channels = channels_24ghz + channels_5ghz_non_dfs + channels_5ghz_dfs
 
-        thread_channel_hopping = threading.Thread(target=self.channel_hopping, args=([channels]))
+        thread_channel_hopping = threading.Thread(target=self.channel_hopping, args=(channels,))
         thread_channel_hopping.start()
 
         self.btn_scan.config(text="스캔 종료", command=self.stop_scan, background="red")
