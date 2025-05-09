@@ -234,6 +234,9 @@ class MainWindow(Tk,Hacker):
         if self.scanning:
             msgbox.showerror("","스캔중입니다.")
             return
+        if not self.listbox.curselection():
+            msgbox.showerror("","AP를 선택해 주세요.")
+            return
         index=self.listbox.curselection()[0]
         ssid=self.ap_list[index][0]
         ap=self.ap_list[index][1]
