@@ -71,6 +71,7 @@ class Hacker:
     def channel_hopping(self, channels, interval=0.5):
         while self.scanning:
             for ch in channels:
+                if not self.scanning: return
                 subprocess.run(["sudo", "iwconfig", self.iface, "channel", str(ch)])
                 time.sleep(interval)
 
@@ -81,14 +82,15 @@ class MainWindow(Tk,Hacker):
         super().__init__()
         Hacker.__init__(self)
 
-        self.geometry('300x600')
-        self.resizable(False, False)
+        self.geometry('450x600')
+        #self.resizable(False, False)
         self.title("deauthentication tool")
 
         self.bind("<Key>", self.handle_key)
+        """
         sub_loop=threading.Thread(target=self.sub_loop_start)
         sub_loop.daemon=True
-        sub_loop.start()
+        sub_loop.start()"""
 
         self.set_gui()
 
@@ -103,6 +105,11 @@ class MainWindow(Tk,Hacker):
         self.entry_iface.grid(row=r, column=1)
 
         r+=1
+
+        """
+        self.check_target = Checkbutton(self, text="Anchor Taget")
+
+        r+=1"""
 
         Label(self, text="deauth count").grid(row=r, column=0)
 
@@ -119,19 +126,43 @@ class MainWindow(Tk,Hacker):
         Label(self, text="AP LIST").grid(row=r,column=0,columnspan=2)
 
         r+=1
+        """
 
         Label(self, text="SSID").grid(row=r,column=0)
         Label(self, text="BSSID").grid(row=r,column=1)
 
         r+=1
-
         self.frame_ap_list=Frame(self)
-        self.frame_ap_list.grid(row=r, column=0, columnspan=2)
+        self.frame_ap_list.grid(row=r, column=0, columnspan=2)"""
+
+        Label(self, text="SSID | BSSID | CH").grid(row=r, column=0, columnspan=2)
+
+        r+=1
+
+        scrollbar = Scrollbar(self, orient=VERTICAL)
+        scrollbar.grid(row=r, column=2, sticky="ns")
+
+        self.listbox = Listbox(
+            self,
+            width=50,
+            height=15,
+            yscrollcommand=scrollbar.set,
+            selectmode=SINGLE
+        )
+        self.listbox.grid(row=r, column=0, columnspan=2, sticky="ns")
+        scrollbar.config(command=self.listbox.yview)
+
+        self.after(1000, self.update_ap_list)
+
+        r+=1
+
+        Button(self, text="공격",command=self.deauth_start).grid(row=r,column=0,columnspan=2)
+
 
 
     def handle_key(self, event):
         self.iface=self.entry_iface.get()
-
+    """
     def sub_loop_start(self):
         packed_btn=0
         while True:
@@ -141,7 +172,16 @@ class MainWindow(Tk,Hacker):
                 Button(self.frame_ap_list, text=new_AP[0], command=lambda i=packed_btn: self.deauth_start(i)).grid(row=packed_btn, column=0)
                 Label(self.frame_ap_list, text=new_AP[1]).grid(row=packed_btn, column=1)
                 packed_btn+=1
-            time.sleep(1)
+            time.sleep(1)"""
+
+    def update_ap_list(self):   
+        """ap_list에 새로 들어온 항목을 Listbox에 추가"""
+        cur_size = self.listbox.size()
+        if len(self.ap_list) > cur_size:
+            for ssid, bssid, ch in self.ap_list[cur_size:]:
+                display = f"{ssid or '<hidden>'} | {bssid} | {ch}"
+                self.listbox.insert(END, display)
+        self.after(1000, self.update_ap_list)
 
     def AP_scan_btn(self):
         if not self.iface:
@@ -178,7 +218,14 @@ class MainWindow(Tk,Hacker):
         self.scanning=False
         self.btn_scan.destroy()
 
-    def deauth_start(self,index):
+    def deauth_start(self):
+        if not self.entry_count.get().isnumeric():
+            msgbox.showerror("","공격 횟수를 정확히 입력하세요.")
+            return
+        if self.scanning:
+            msgbox.showerror("","스캔중입니다.")
+            return
+        index=self.listbox.curselection()[0]
         ssid=self.ap_list[index][0]
         ap=self.ap_list[index][1]
         ch=self.ap_list[index][2]
