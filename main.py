@@ -81,7 +81,8 @@ class MainWindow(Tk,Hacker):
         super().__init__()
         Hacker.__init__(self)
 
-        self.geometry('600x400')
+        self.geometry('300x600')
+        self.resizable(False, False)
         self.title("deauthentication tool")
 
         self.bind("<Key>", self.handle_key)
@@ -93,24 +94,39 @@ class MainWindow(Tk,Hacker):
 
 
     def set_gui(self):
+        
+        r=0
+
+        Label(self, text="interface").grid(row=r, column=0, padx=25,pady=10)
 
         self.entry_iface=Entry(self)
-        self.entry_iface.grid(row=0, column=0,columnspan=2)
+        self.entry_iface.grid(row=r, column=1)
+
+        r+=1
+
+        Label(self, text="deauth count").grid(row=r, column=0)
 
         self.entry_count=Entry(self)
-        self.entry_count.grid(row=0, column=3,columnspan=1)
+        self.entry_count.grid(row=r, column=1)
 
+        r+=1
         
-        self.btn_scan = Button(self, text="AP 스캔",command=self.AP_scan_btn)
-        self.btn_scan.grid(row=1,column=0,columnspan=2)
-        self.btn_scan_quit=Button(self, text="스캔 종료", command=self.stop_scan)
+        self.btn_scan = Button(self, text="AP SCAN",command=self.AP_scan_btn)
+        self.btn_scan.grid(row=r,column=0,columnspan=2)
 
-        Label(self, text="AP 리스트").grid(row=2,column=0,columnspan=2)
-        Label(self, text="SSID").grid(row=3,column=0)
-        Label(self, text="BSSID").grid(row=3,column=1)
+        r+=1
+
+        Label(self, text="AP LIST").grid(row=r,column=0,columnspan=2)
+
+        r+=1
+
+        Label(self, text="SSID").grid(row=r,column=0)
+        Label(self, text="BSSID").grid(row=r,column=1)
+
+        r+=1
 
         self.frame_ap_list=Frame(self)
-        self.frame_ap_list.grid(row=4, column=0, columnspan=2)
+        self.frame_ap_list.grid(row=r, column=0, columnspan=2)
 
 
     def handle_key(self, event):
@@ -154,14 +170,13 @@ class MainWindow(Tk,Hacker):
         thread_channel_hopping = threading.Thread(target=self.channel_hopping, args=([channels]))
         thread_channel_hopping.start()
 
-        self.btn_scan.destroy()
-        self.btn_scan_quit.grid(row=1,column=0, columnspan=2)
+        self.btn_scan.config(text="스캔 종료", command=self.stop_scan, background="red")
         msgbox.showinfo("","주변 AP 스캔 시작")
 
 
     def stop_scan(self):
         self.scanning=False
-        self.btn_scan_quit.destroy()
+        self.btn_scan.destroy()
 
     def deauth_start(self,index):
         ssid=self.ap_list[index][0]
