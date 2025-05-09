@@ -89,23 +89,7 @@ class MainWindow(Tk,Hacker):
         sub_loop.daemon=True
         sub_loop.start()
 
-        self.entry_iface=Entry(self)
-        self.entry_iface.grid(row=0, column=0,columnspan=2)
-
-        self.entry_count=Entry(self)
-        self.entry_count.grid(row=0, column=3,columnspan=1)
-
-        
-        self.btn_scan = Button(self, text="AP 스캔",command=self.AP_scan_btn)
-        self.btn_scan.grid(row=1,column=0,columnspan=2)
-        self.btn_scan_quit=Button(self, text="스캔 종료", command=self.stop_scan)
-
-        Label(self, text="AP 리스트").grid(row=2,column=0,columnspan=2)
-        Label(self, text="SSID").grid(row=3,column=0)
-        Label(self, text="BSSID").grid(row=3,column=1)
-
-        self.frame_ap_list=Frame(self)
-        self.frame_ap_list.grid(row=4, column=0, columnspan=2)
+        self.set_gui()
 
 
     def set_gui(self):
