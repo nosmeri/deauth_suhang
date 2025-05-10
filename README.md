@@ -30,6 +30,9 @@ For building and running the application you need:
 
 ## Usage <a name = "usage"></a>
 
-First, entering your interface, and switch to monitor mode.
-
-Then, scan AP, select the AP you want to attack, enter the number of packets to send, and attack.
+1. entering your interface.
+2. switch to monitor mode.
+3. scan AP.
+4. select the AP you want to attack.
+5. enter the number of packets to send.
+6. attack!
