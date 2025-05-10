@@ -30,7 +30,7 @@ For building and running the application you need:
 
 ## Usage <a name = "usage"></a>
 
-1. entering your interface.
+1. enter your interface.
 2. switch to monitor mode.
 3. scan AP.
 4. select the AP you want to attack.
