@@ -205,9 +205,11 @@ class MainWindow(Tk,Hacker):
             msgbox.showerror("","인터페이스가 모니터 모드가 아닙니다.")
             return
         thread = threading.Thread(target=self.ap_scan)
+        thread.daemon=True
         thread.start()
 
         thread_channel_hopping = threading.Thread(target=self.channel_hopping)
+        thread_channel_hopping.daemon=True
         thread_channel_hopping.start()
 
         self.btn_scan.config(text="스캔 종료", command=self.stop_scan, background="red")
@@ -237,6 +239,7 @@ class MainWindow(Tk,Hacker):
         print(ch)
 
         thread=threading.Thread(target=self.deauth, args=(ap,ch,ct))
+        thread.daemon=True
         thread.start()
         msgbox.showinfo("",f"{ssid}에게 공격 시작")
 
