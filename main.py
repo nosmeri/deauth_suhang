@@ -8,6 +8,7 @@ import time
 
 DEAUTH_INTERVAL = 0.005
 HOP_INTERVAL = 0.5
+SCAN_CHANNELS=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 36, 40, 44, 48, 149, 153, 157, 161, 165, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140]
 
 class Hacker:
     def __init__(self):
@@ -77,9 +78,9 @@ class Hacker:
         time.sleep(0.05)
         sendp(packet, iface=self.iface, count=ct, inter=DEAUTH_INTERVAL, verbose=1)
 
-    def channel_hopping(self, channels, ):
+    def channel_hopping(self):
         while self.scanning:
-            for ch in channels:
+            for ch in SCAN_CHANNELS:
                 if not self.scanning: return
                 subprocess.run(["sudo", "iwconfig", self.iface, "channel", str(ch)])
                 time.sleep(HOP_INTERVAL)
@@ -206,21 +207,7 @@ class MainWindow(Tk,Hacker):
         thread = threading.Thread(target=self.ap_scan)
         thread.start()
 
-
-
-        channels_24ghz = list(range(1, 14 + 1))  # 1~13 (한국 기준)
-
-        # 5GHz 채널 – DFS 제외 (일반 공유기 + 공격용 랜카드에서 자주 사용됨)
-        channels_5ghz_non_dfs = [36, 40, 44, 48, 149, 153, 157, 161, 165]
-
-        # 5GHz 채널 – DFS 포함 (일부 랜카드는 제약, 레이더 간섭 감지 필요)
-        channels_5ghz_dfs = [52, 56, 60, 64,
-                            100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140]
-
-        # 전체 결합
-        channels = channels_24ghz + channels_5ghz_non_dfs + channels_5ghz_dfs
-
-        thread_channel_hopping = threading.Thread(target=self.channel_hopping, args=(channels,))
+        thread_channel_hopping = threading.Thread(target=self.channel_hopping)
         thread_channel_hopping.start()
 
         self.btn_scan.config(text="스캔 종료", command=self.stop_scan, background="red")
