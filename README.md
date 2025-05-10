@@ -26,7 +26,7 @@ For building and running the application you need:
     $ git clone https://github.com/nosmeri/deauth_suhang.git
     $ cd ./deauth_suhang
     $ sudo pip install -r ./requirements.txt
-    & sudo python3 ./main.py
+    $ sudo python3 ./main.py
 
 ## Usage <a name = "usage"></a>
 
